@@ -208,6 +208,11 @@ IP: 192.168.236.130 (Kali, setelah nmap scan + simulasi scanning tambahan)
   Jumlah request 404: 19
   Status            : MENCURIGAKAN (kemungkinan scanning)
 ```
+### `detect_web_attacks.py`
+
+Membaca `/var/log/nginx/access.log` dan mencocokkan setiap request dengan pola regex serangan umum: **SQL Injection**, **Path Traversal**, dan **XSS**. Berbeda dari dua script sebelumnya yang berbasis *threshold* (jumlah percobaan), script ini berbasis *pattern matching* — satu request yang cocok pola saja langsung ditandai, karena satu percobaan SQLi/path traversal sudah cukup jadi indikator serangan, tidak perlu menunggu terjadi berkali-kali.
+
+**Hasil pengujian** (request simulasi dari Kali menggunakan payload umum lewat `curl`):
 
 ## 8. Pembelajaran & Keterbatasan
 
@@ -219,7 +224,7 @@ IP: 192.168.236.130 (Kali, setelah nmap scan + simulasi scanning tambahan)
 ## 9. Rencana Lanjutan
 
 - [ ] Integrasi dengan Wazuh (SIEM) untuk monitoring terpusat.
-- [ ] Menambah deteksi pola serangan lain (SQL injection attempt, path traversal).
+- [x] Menambah deteksi pola serangan lain (SQL injection attempt, path traversal, XSS).
 - [ ] Automasi script menjadi cron job dengan notifikasi (email/webhook).
 - [ ] Segmentasi jaringan lebih lanjut dengan VLAN simulasi.
 - [x] Automasi script menjadi cron job.
