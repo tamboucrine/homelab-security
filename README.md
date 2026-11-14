@@ -217,6 +217,7 @@ Membaca `/var/log/nginx/access.log` dan mencocokkan setiap request dengan pola r
 ## 8. Pembelajaran & Keterbatasan
 
 - **Threshold sederhana efektif tapi punya trade-off.** Serangan jelas (banyak percobaan dalam waktu singkat) mudah tertangkap, tapi serangan pelan/stealthy (di bawah threshold) bisa lolos (*false negative*). Sebaliknya, pengguna asli yang salah ketik URL berkali-kali berisiko salah terdeteksi (*false positive*).
+- **Alert fatigue teratasi dengan state tracking.** Versi awal `monitor.py` melaporkan ulang insiden lama yang sama di setiap siklus cron (5 menit sekali) karena membaca ulang seluruh log dari awal. Solusinya: menyimpan "memori" alert terakhir di `state.json` (IP, jumlah percobaan terakhir, jenis serangan yang sudah dilaporkan), lalu hanya mengirim alert baru jika ada *peningkatan* dari yang tercatat sebelumnya. Ini meniru prinsip deduplikasi alert yang dipakai SIEM sungguhan.
 - **Redirect HTTP→HTTPS dapat "menyembunyikan" serangan dari detector 404 sederhana.** Request `curl` tanpa opsi follow-redirect ke port 80 hanya menghasilkan kode 301, bukan 404, sehingga tidak tercatat sebagai anomali oleh script `detect_web_scan.py`.
 - **User-Agent bisa dipalsukan.** Di lab ini, Nmap Scripting Engine tidak menyamarkan identitasnya, tapi di dunia nyata analis SOC tidak bisa hanya mengandalkan User-Agent sebagai penanda.
 - **Defense in depth bekerja lebih baik daripada satu lapis saja.** Kombinasi firewall (membatasi akses), fail2ban (merespons otomatis), dan monitoring log (mendeteksi & mendokumentasikan) saling melengkapi kelemahan masing-masing.
@@ -228,7 +229,7 @@ Membaca `/var/log/nginx/access.log` dan mencocokkan setiap request dengan pola r
 - [ ] Automasi script menjadi cron job dengan notifikasi (email/webhook).
 - [ ] Segmentasi jaringan lebih lanjut dengan VLAN simulasi.
 - [x] Automasi script menjadi cron job.
-- [ ] Tambahkan state tracking (mis. simpan IP+timestamp yang sudah dialert) agar tidak lapor insiden yang sama berulang kali.
+- [x] Tambahkan state tracking (`state.json`) agar tidak lapor insiden yang sama berulang kali.
 
 ---
 
