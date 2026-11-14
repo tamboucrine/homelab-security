@@ -182,6 +182,17 @@ IP: 192.168.236.130
   Username yang dicoba : irene
   Status               : MENCURIGAKAN
 ```
+### Automasi dengan Cron
+
+Script `monitor.py` dijadwalkan berjalan otomatis setiap 5 menit:
+
+\`\`\`bash
+*/5 * * * * /usr/bin/python3 /home/irene/soc-tools/monitor.py >> /home/irene/soc-tools/cron.log 2>&1
+\`\`\`
+
+Diverifikasi berjalan tanpa intervensi manual — `cron.log` terus bertambah isi setiap 5 menit sesuai jadwal.
+
+**Keterbatasan ditemukan:** karena script membaca ulang seluruh log dari awal setiap kali dijalankan (tidak ada state/memori alert yang sudah dilaporkan), insiden lama yang sama terus dilaporkan berulang di setiap siklus cron. Ini mendemonstrasikan masalah **alert fatigue** yang nyata terjadi di SOC sungguhan — analis bisa kebanjiran alert duplikat dan mengabaikan alert baru yang justru penting.
 
 ### `detect_web_scan.py`
 
@@ -211,6 +222,8 @@ IP: 192.168.236.130 (Kali, setelah nmap scan + simulasi scanning tambahan)
 - [ ] Menambah deteksi pola serangan lain (SQL injection attempt, path traversal).
 - [ ] Automasi script menjadi cron job dengan notifikasi (email/webhook).
 - [ ] Segmentasi jaringan lebih lanjut dengan VLAN simulasi.
+- [x] Automasi script menjadi cron job.
+- [ ] Tambahkan state tracking (mis. simpan IP+timestamp yang sudah dialert) agar tidak lapor insiden yang sama berulang kali.
 
 ---
 
